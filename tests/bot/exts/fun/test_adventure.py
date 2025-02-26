@@ -23,13 +23,15 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
     async def test_get_game_data_game_not_found(self):
         """Test if the `new_adventure` command correctly returns the error message when game not found."""
 
-        self.assertIsNone(await self.cog.new_adventure(self.cog, self.ctx, self.no_game))
+        await self.cog.new_adventure(self.cog, self.ctx, self.no_game)
+
         self.ctx.send.assert_called_once()
-        message, kwargs = self.ctx.send.call_args
-        self.assertRegex(message[0], re.compile(r'Game code ".*" not found.'))
+        message = self.ctx.send.call_args.args[0]
+        self.assertEqual(message, f'Game code "{self.no_game}" not found.')
 
     async def test_get_game_data_game_found(self):
         """Test if the `new_adventure` command does not print any error message when game found."""
 
-        self.assertIsNone(await self.cog.new_adventure(self.cog, self.ctx, self.sample_game))
+        await self.cog.new_adventure(self.cog, self.ctx, self.sample_game)
+        
         self.ctx.send.assert_not_called()
