@@ -1,3 +1,5 @@
+This Readme has been copied from the python-discord/bot so some info might not be correct.
+
 # Testing our Bot
 
 Our bot is one of the most important tools we have for running our community. As we don't want that tool break, we decided that we wanted to write unit tests for it. We hope that in the future, we'll have a 100% test coverage for the bot. This guide will help you get started with writing the tests needed to achieve that.
