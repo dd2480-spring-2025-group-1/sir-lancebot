@@ -73,8 +73,8 @@ class AdventureData(TypedDict):
     """
     A dictionary containing the game data, serialized from a JSON file in `resources/fun/adventures`.
 
-    The keys are the room names, and the values are dictionaries containing the room data, which can be either a
-    RoomData or an EndRoomData.
+    The keys are the room names, and the values are dictionaries containing the room data,
+    which can be either a RoomData or an EndRoomData.
 
     There must exist only one "start" key in the dictionary. However, there can be multiple endings, i.e., EndRoomData.
     """
@@ -356,5 +356,5 @@ class Adventure(DiscordCog):
 
 
 async def setup(bot: Bot) -> None:
-    """"Adventure Cog load."""
+    """Load the Adventure cog."""
     await bot.add_cog(Adventure(bot))
