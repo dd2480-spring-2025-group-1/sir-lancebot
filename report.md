@@ -68,6 +68,9 @@ It is a feature request for a text-based RPG adventure game that can be played u
 Scope (functionality and code affected):
 - We will need to add a new `adventure.py` file, which includes an `Adventure` class as an entry point for the Cog, along with the `GameSession` class for handling the game logic.
 - Write a playable prototype of your game as a bot command.
+    - [x] Write a playable prototype of your game as a bot command.
+        - [x] Use `.adventure [game_code]` or `.adventure [index]` to play the game.
+        - [x] Use `.adventures` or `.adventure` to view a list of available games.
     - [x] Make all player interactions reactions instead of having the player type commands.
     - [x] Make the entire game happen in a single message that the bot edits, instead of having the bot post new messages.
     - [x] Make a system that is possible to easily extend with new campaigns.
