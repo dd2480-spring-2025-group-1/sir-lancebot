@@ -1,4 +1,4 @@
-This Readme has been copied from the python-discord/bot so some info might not be correct.
+⚠️ This README has been copied from `python-discord/bot`, so please be aware that some info might not be correct.
 
 # Testing our Bot
 
