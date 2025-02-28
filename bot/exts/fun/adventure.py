@@ -1,9 +1,9 @@
-# Adventure command from Python bot. 
+# Adventure command from Python bot.
 import asyncio
-from contextlib import suppress
 import json
+from contextlib import suppress
 from pathlib import Path
-from typing import Literal, NamedTuple, TypedDict, Union
+from typing import Literal, NamedTuple, NotRequired, TypedDict
 
 from discord import Embed, HTTPException, Message, Reaction, User
 from discord.ext import commands
@@ -26,9 +26,7 @@ log = get_logger(__name__)
 
 
 class GameInfo(TypedDict):
-    """
-    A dictionary containing the game information. Used in `available_games.json`.
-    """
+    """A dictionary containing the game information. Used in `available_games.json`."""
 
     id: str
     name: str
@@ -50,6 +48,8 @@ class OptionData(TypedDict):
     text: str
     leads_to: str
     emoji: str
+    requires_effect: NotRequired[str]
+    effect: NotRequired[str]
 
 
 class RoomData(TypedDict):
@@ -75,19 +75,18 @@ class AdventureData(TypedDict):
     """
     A dictionary containing the game data, serialized from a JSON file in `resources/fun/adventures`.
 
-    The keys are the room names, and the values are dictionaries containing the room data, which can be either a RoomData or an EndRoomData.
+    The keys are the room names, and the values are dictionaries containing the room data,
+    which can be either a RoomData or an EndRoomData.
 
     There must exist only one "start" key in the dictionary. However, there can be multiple endings, i.e., EndRoomData.
     """
 
     start: RoomData
-    __annotations__: dict[str, Union[RoomData, EndRoomData]]
+    __annotations__: dict[str, RoomData | EndRoomData]
 
 
 class GameCodeNotFoundError(ValueError):
-    """
-    Raised when a GameSession code doesn't exist.
-    """
+    """Raised when a GameSession code doesn't exist."""
 
     def __init__(
         self,
@@ -97,9 +96,7 @@ class GameCodeNotFoundError(ValueError):
 
 
 class GameSession:
-    """
-    An interactive session for the Adventure RPG game.
-    """
+    """An interactive session for the Adventure RPG game."""
 
     def __init__(
         self,
@@ -122,8 +119,9 @@ class GameSession:
         self.message = None
 
         # init session states
-        self._current_room = "start"
-        self._path = [self._current_room]
+        self._current_room: str = "start"
+        self._path: list[str] = [self._current_room]
+        self._effects: list[str] = []
 
         # session settings
         self.timeout_message = (
@@ -144,7 +142,7 @@ class GameSession:
             self.game_code = game_code
         except (ValueError, IndexError):
             pass
-            
+
         # load the game data from the JSON file
         try:
             game_data = json.loads(
@@ -172,7 +170,7 @@ class GameSession:
     def reset_timeout(self) -> None:
         """Cancels the original timeout task and sets it again from the start."""
         self.cancel_timeout()
-        
+
         # recreate the timeout task
         self._timeout_task = self._bot.loop.create_task(self.timeout())
 
@@ -180,7 +178,7 @@ class GameSession:
         """Sends a list of all available game codes."""
         available_game_codes = "\n\n".join(
             f"{index}. **{game['name']}** (`{game['id']}`)\n*{game['description']}*"
-            for index, game in enumerate(AVAILABLE_GAMES, start=1) 
+            for index, game in enumerate(AVAILABLE_GAMES, start=1)
         )
 
         embed = Embed(
@@ -192,7 +190,7 @@ class GameSession:
         embed.set_footer(text="💡 Hint: use `.adventure [game_code]` or `.adventure [index]` to start a game.")
 
         await self.destination.send(embed=embed)
-        
+
     async def on_reaction_add(self, reaction: Reaction, user: User) -> None:
         """Event handler for when reactions are added on the game message."""
         # ensure it was the relevant session message
@@ -206,9 +204,7 @@ class GameSession:
         emoji = str(reaction.emoji)
 
         # check if valid action
-        current_room = self._current_room
-        available_options = self.game_data[current_room]["options"]
-        acceptable_emojis = [option["emoji"] for option in available_options]
+        acceptable_emojis = [option["emoji"] for option in self.available_options]
         if emoji not in acceptable_emojis:
             return
 
@@ -219,7 +215,9 @@ class GameSession:
             await self.message.clear_reactions()
 
         # Run relevant action method
-        await self.pick_option(acceptable_emojis.index(emoji))
+        all_emojis = [option["emoji"] for option in self.all_options]
+
+        await self.pick_option(all_emojis.index(emoji))
 
 
     async def on_message_delete(self, message: Message) -> None:
@@ -235,31 +233,28 @@ class GameSession:
             self._bot.add_listener(self.on_message_delete)
         else:
             await self.send_available_game_codes()
-            
+
 
     def add_reactions(self) -> None:
         """Adds the relevant reactions to the message based on if options are available in the current room."""
         if self.is_in_ending_room:
             return
-        
-        current_room = self._current_room
-        available_options = self.game_data[current_room]["options"]
-        reactions = [option["emoji"] for option in available_options]
 
-        for reaction in reactions:
+        pickable_emojis = [option["emoji"] for option in self.available_options]
+
+        for reaction in pickable_emojis:
             self._bot.loop.create_task(self.message.add_reaction(reaction))
 
     def _format_room_data(self, room_data: RoomData) -> str:
         """Formats the room data into a string for the embed description."""
         text = room_data["text"]
-        options = room_data["options"]
 
         formatted_options = "\n".join(
-            f"{option["emoji"]} {option["text"]}" for option in options
+            f"{option["emoji"]} {option["text"]}" for option in self.available_options
         )
 
         return f"{text}\n\n{formatted_options}"
-    
+
     def embed_message(self, room_data: RoomData | EndRoomData) -> Embed:
         """Returns an Embed with the requested room data formatted within."""
         embed = Embed()
@@ -296,9 +291,7 @@ class GameSession:
 
     @classmethod
     async def start(cls, ctx: Context, game_code: str | None = None) -> "GameSession":
-        """
-        Create and begin a game session based on the given game code.
-        """
+        """Create and begin a game session based on the given game code."""
         session = cls(ctx, game_code)
         await session.prepare()
 
@@ -317,12 +310,35 @@ class GameSession:
 
         return self.game_data[current_room].get("type") == "end"
 
+    @property
+    def all_options(self) -> list[OptionData]:
+        """Get all options in the current room."""
+        return self.game_data[self._current_room]["options"]
+
+    @property
+    def available_options(self) -> bool:
+        """
+        Get "available" options in the current room.
+
+        This filters out options that require an effect that the user doesn't have.
+        """
+        filtered_options = filter(
+            lambda option: "requires_effect" not in option or option["requires_effect"] in self._effects,
+            self.all_options
+        )
+
+        return filtered_options
+
     async def pick_option(self, index: int) -> None:
         """Event that is called when the user picks an option."""
-        current_room = self._current_room
-        next_room = self.game_data[current_room]["options"][index]["leads_to"]
+        chosen_option = self.all_options[index]
 
-        # update the path and current room
+        next_room = chosen_option["leads_to"]
+        new_effect = chosen_option.get("effect")
+
+        # update all the game states
+        if new_effect:
+            self._effects.append(new_effect)
         self._path.append(next_room)
         self._current_room = next_room
 
@@ -340,7 +356,7 @@ class Adventure(DiscordCog):
             await GameSession.start(ctx, game_code)
         except GameCodeNotFoundError as error:
             await ctx.send(str(error))
-        
+
     @commands.command(name="adventures")
     async def list_adventures(self, ctx: Context) -> None:
         """List all available adventure games."""
@@ -348,4 +364,5 @@ class Adventure(DiscordCog):
 
 
 async def setup(bot: Bot) -> None:
+    """Load the Adventure cog."""
     await bot.add_cog(Adventure(bot))
