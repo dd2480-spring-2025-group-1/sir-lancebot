@@ -20,7 +20,8 @@
         {
           "text": "Dig up the grave",
           "leads_to": "digged_grave",
-          "emoji": "⛏️"
+          "emoji": "⛏️",
+          "effect_restricts": "rusty_key"
         },
         {
           "text": "Leave the grave and go inside the mansion",
@@ -99,16 +100,18 @@
       "text": "You enter a dusty kitchen filled with rusty utensils and scattered knives. There is also a single potato masher on the counter...",
       "options": [
         {
-            "text": "Take a knife and go to the lobby",
-            "leads_to": "lobby",
-            "emoji": "🔪",
-            "effect": "knife"
+          "text": "Take a knife and go to the lobby",
+          "leads_to": "lobby",
+          "emoji": "🔪",
+          "effect": "knife",
+          "effect_restricts": "knife"
           },
         {
           "text": "Take the potato masher and go to the lobby",
           "leads_to": "lobby",
           "emoji": "🥔",
-          "effect": "potato_masher"
+          "effect": "potato_masher",
+          "effect_restricts": "potato_masher"
         },
         {
           "text": "Return to the lobby empty-handed",

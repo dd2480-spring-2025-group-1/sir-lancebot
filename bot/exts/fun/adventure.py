@@ -49,6 +49,7 @@ class OptionData(TypedDict):
     leads_to: str
     emoji: str
     requires_effect: NotRequired[str]
+    effect_restricts: NotRequired[str]
     effect: NotRequired[str]
 
 
@@ -323,7 +324,11 @@ class GameSession:
         This filters out options that require an effect that the user doesn't have.
         """
         filtered_options = filter(
-            lambda option: "requires_effect" not in option or option["requires_effect"] in self._effects,
+            lambda option: (
+                "requires_effect" not in option or option.get("requires_effect") in self._effects
+            ) and (
+                "effect_restricts" not in option or option.get("effect_restricts") not in self._effects
+            ),
             self.all_options
         )
 
