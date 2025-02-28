@@ -321,7 +321,7 @@ class GameSession:
         """
         Get "available" options in the current room.
 
-        This filters out options that require an effect that the user doesn't have.
+        This filters out options that require an effect that the user doesn't have or options that restrict an effect.
         """
         filtered_options = filter(
             lambda option: (
