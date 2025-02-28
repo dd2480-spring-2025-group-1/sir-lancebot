@@ -31,6 +31,8 @@ class GameInfo(TypedDict):
     id: str
     name: str
     description: str
+    color: str
+    time: int
 
 
 BASE_PATH = "bot/resources/fun/adventures"
@@ -49,6 +51,7 @@ class OptionData(TypedDict):
     leads_to: str
     emoji: str
     requires_effect: NotRequired[str]
+    effect_restricts: NotRequired[str]
     effect: NotRequired[str]
 
 
@@ -71,7 +74,7 @@ class EndRoomData(TypedDict):
     emoji: str
 
 
-class AdventureData(TypedDict):
+class GameData(TypedDict):
     """
     A dictionary containing the game data, serialized from a JSON file in `resources/fun/adventures`.
 
@@ -101,17 +104,20 @@ class GameSession:
     def __init__(
         self,
         ctx: Context,
-        game_code: str | None = None,
+        game_code_or_index: str | None = None,
     ):
         """Creates an instance of the GameSession class."""
         self._ctx = ctx
         self._bot = ctx.bot
 
         # set the game details/ game codes required for the session
-        self.game_code = game_code
+        self.game_code = game_code_or_index
         self.game_data = None
-        if game_code:
-            self.game_data = self._get_game_data(game_code)
+        self.game_info = None
+        if game_code_or_index:
+            self.game_code = self._parse_game_code(game_code_or_index)
+            self.game_data = self._get_game_data()
+            self.game_info = self._get_game_info()
 
         # store relevant discord info
         self.author = ctx.author
@@ -124,24 +130,30 @@ class GameSession:
         self._effects: list[str] = []
 
         # session settings
+        self._timeout_seconds = 30 if self.game_info is None else self.game_info["time"]
         self.timeout_message = (
-            "⏳ Hint: time is running out! You must make a choice within 60 seconds."
+            f"⏳ Hint: time is running out! You must make a choice within {self._timeout_seconds} seconds."
         )
         self._timeout_task = None
         self.reset_timeout()
 
-    def _get_game_data(self, game_code: str) -> AdventureData | None:
-        """Returns the game data for the given game code."""
+    def _parse_game_code(self, game_code_or_index: str) -> str:
+        """Returns the actual game code for the given index/ game code."""
         # sanitize the game code to prevent directory traversal attacks.
-        game_code = Path(game_code).name
+        game_code = Path(game_code_or_index).name
 
-        # Convert index to game code if it's a number
+        # convert index to game code if it's a number
         try:
-            index = int(game_code)
+            index = int(game_code_or_index)
             game_code = AVAILABLE_GAMES[index - 1]["id"]
-            self.game_code = game_code
         except (ValueError, IndexError):
             pass
+
+        return game_code
+
+    def _get_game_data(self) -> GameData | None:
+        """Returns the game data for the given game code."""
+        game_code = self.game_code
 
         # load the game data from the JSON file
         try:
@@ -152,14 +164,27 @@ class GameSession:
         except FileNotFoundError:
             raise GameCodeNotFoundError(f'Game code "{game_code}" not found.')
 
+    def _get_game_info(self) -> GameInfo:
+        """Returns the game info for the given game code."""
+        game_code = self.game_code
+
+        try:
+            return AVAILABLE_GAMES_DICT[game_code]
+        except KeyError:
+            log.error(
+                "Game data retrieved, but game info not found. Did you forget to add it to `available_games.json`?"
+            )
+            raise GameCodeNotFoundError(f'Game code "{game_code}" not found.')
+
     async def notify_timeout(self) -> None:
         """Notifies the user that the session has timed out."""
         await self.message.edit(content="⏰ You took too long to make a choice! The game has ended. :(")
 
-    async def timeout(self, seconds: int = 60) -> None:
+    async def timeout(self) -> None:
         """Waits for a set number of seconds, then stops the game session."""
-        await asyncio.sleep(seconds)
+        await asyncio.sleep(self._timeout_seconds)
         await self.notify_timeout()
+        await self.message.clear_reactions()
         await self.stop()
 
     def cancel_timeout(self) -> None:
@@ -250,7 +275,10 @@ class GameSession:
         text = room_data["text"]
 
         formatted_options = "\n".join(
-            f"{option["emoji"]} {option["text"]}" for option in self.available_options
+            f"{option["emoji"]} {option["text"]}"
+            if option in self.available_options
+            else "🔒 ***This option is locked***"
+            for option in self.all_options
         )
 
         return f"{text}\n\n{formatted_options}"
@@ -258,7 +286,7 @@ class GameSession:
     def embed_message(self, room_data: RoomData | EndRoomData) -> Embed:
         """Returns an Embed with the requested room data formatted within."""
         embed = Embed()
-        embed.color = constants.Colours.soft_orange
+        embed.color = int(self.game_info["color"], base=16)
 
         current_game_name = AVAILABLE_GAMES_DICT[self.game_code]["name"]
 
@@ -290,9 +318,9 @@ class GameSession:
             self.add_reactions()
 
     @classmethod
-    async def start(cls, ctx: Context, game_code: str | None = None) -> "GameSession":
+    async def start(cls, ctx: Context, game_code_or_index: str | None = None) -> "GameSession":
         """Create and begin a game session based on the given game code."""
-        session = cls(ctx, game_code)
+        session = cls(ctx, game_code_or_index)
         await session.prepare()
 
         return session
@@ -320,10 +348,14 @@ class GameSession:
         """
         Get "available" options in the current room.
 
-        This filters out options that require an effect that the user doesn't have.
+        This filters out options that require an effect that the user doesn't have or options that restrict an effect.
         """
         filtered_options = filter(
-            lambda option: "requires_effect" not in option or option["requires_effect"] in self._effects,
+            lambda option: (
+                "requires_effect" not in option or option.get("requires_effect") in self._effects
+            ) and (
+                "effect_restricts" not in option or option.get("effect_restricts") not in self._effects
+            ),
             self.all_options
         )
 
@@ -350,10 +382,10 @@ class Adventure(DiscordCog):
     """Custom Embed for Adventure RPG games."""
 
     @commands.command(name="adventure")
-    async def new_adventure(self, ctx: Context, game_code: str | None = None) -> None:
+    async def new_adventure(self, ctx: Context, game_code_or_index: str | None = None) -> None:
         """Wanted to slay a dragon? Embark on an exciting journey through text-based RPG adventure."""
         try:
-            await GameSession.start(ctx, game_code)
+            await GameSession.start(ctx, game_code_or_index)
         except GameCodeNotFoundError as error:
             await ctx.send(str(error))
 
