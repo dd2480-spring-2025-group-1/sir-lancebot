@@ -38,23 +38,25 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_get_game_data_game_found(self):
         """Test if the `_get_game_data` command returns a valid dictionary of a story containing start and ending_1 keys."""  # noqa: E501
+        self.game_session.game_code = self.sample_game
 
-        story = self.game_session._get_game_data(self.sample_game)
+        story = self.game_session._get_game_data()
         self.assertIn("start", story)
         self.assertIn("ending_1", story)
 
     async def test_get_game_data_game_not_found(self):
         """Test if the `_get_game_data` command returns a GameCodeNotFoundError if the game_code does not exist."""
+        self.game_session.game_code = self.no_game
 
         with self.assertRaises(adventure.GameCodeNotFoundError):
-            await self.game_session._get_game_data(self.no_game)
+            await self.game_session._get_game_data()
 
 
     async def test_embed_message_footer(self):
         """Test if the `embed_message` command returns an embed with "time running out" hint in the footer."""
 
         message = self.game_session.embed_message(self.game_session.game_data["start"])
-        self.assertEqual(message.footer.text,"⏳ Hint: time is running out! You must make a choice within 60 seconds.")
+        self.assertEqual(message.footer.text,"⏳ Hint: time is running out! You must make a choice within 30 seconds.")
 
     async def test_format_room_data(self):
         """Test if the `_format_room_data` command returns a string in the expected format"""
