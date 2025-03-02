@@ -1,0 +1,494 @@
+{
+    "start": {
+      "text": "You awaken in a dim hotel room, head throbbing, with no recollection of how you got here. Scrawled on your hand, in shaky handwriting, are the words: 'You have the power to rewind time.' The small room contains three things of note: a dusty painting on the wall, a refrigerator that hums faintly, and a door leading out into the hallway.",
+      "options": [
+        {
+          "text": "Examine the painting on the wall",
+          "leads_to": "painting_choice",
+          "emoji": "🖼️"
+        },
+        {
+          "text": "Open the door to the hallway",
+          "leads_to": "door_scene",
+          "emoji": "🚪"
+        },
+        {
+          "text": "Check the refrigerator",
+          "leads_to": "fridge_scene",
+          "emoji": "🥤"
+        }
+      ]
+    },
+
+    "painting_choice": {
+      "text": "The painting is covered in a thin layer of dust. A faint shape suggests there might be something hidden behind it. You sense two possible actions...",
+      "options": [
+        {
+          "text": "Examine the painting closely",
+          "leads_to": "painting_examine",
+          "emoji": "🔎"
+        },
+        {
+          "text": "Remove the painting from the wall",
+          "leads_to": "painting_remove",
+          "emoji": "🗝️"
+        },
+        {
+          "text": "Return to the main room",
+          "leads_to": "alternative_start",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "painting_examine": {
+      "text": "You lean in to read something scribbled on the painting. Does it say 'th1rd'? As you study the words closer, cold metal presses against the back of your head. Someone is holding a gun to you from behind! You just might have enough time to rewind...",
+      "type": "end",
+      "emoji": "🔫"
+    },
+
+    "painting_remove": {
+      "text": "You lift the painting off the wall and set it aside. Behind it, you find a small keypad lock embedded in the wall beside a locked wall compartment. Two wires run from the keypad, one to the wall compartment and one to a table nearby. It has digits 0–6 and requires exactly three numbers",
+      "options": [
+        {
+          "text": "Try the keypad",
+          "leads_to": "keypad_lock_first_digit",
+          "emoji": "🔢",
+          "effect_restricts": "gun"
+        },
+        {
+          "text": "Return to the main room",
+          "leads_to": "alternative_start",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_first_digit": {
+      "text": "The lock display shows: ENTER FIRST DIGIT. You have 7 numeric buttons and one to leave:",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "keypad_lock_second_digit_zero",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "keypad_lock_second_wrong_digit",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "keypad_lock_second_wrong_digit",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "keypad_lock_second_wrong_digit",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "keypad_lock_second_wrong_digit",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "keypad_lock_second_digit",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "keypad_lock_second_wrong_digit",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_second_wrong_digit": {
+      "text": "The lock display shows: ENTER SECOND DIGIT.",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_second_digit_zero": {
+      "text": "The lock display shows: ENTER SECOND DIGIT.",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "keypad_lock_third_digit_zero",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_second_digit": {
+      "text": "The lock display shows: ENTER SECOND DIGIT.",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "keypad_lock_third_digit",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "keypad_lock_third_wrong_digit",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_third_digit_zero": {
+      "text": "The lock display shows: ENTER THIRD DIGIT.",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "gun_discovery",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "end_wrong_code",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "end_wrong_code",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "end_wrong_code",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "end_wrong_code",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "end_wrong_code",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "end_wrong_code",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_third_digit": {
+      "text": "The lock display shows: ENTER THIRD DIGIT.",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "end_wrong_code",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "safe_contents",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "end_wrong_code",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "end_wrong_code",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "end_wrong_code",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "end_wrong_code",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "end_wrong_code",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "keypad_lock_third_wrong_digit": {
+      "text": "The lock display shows: ENTER THIRD DIGIT.",
+      "options": [
+        {
+          "text": "Press 0",
+          "leads_to": "end_wrong_code",
+          "emoji": "0️⃣"
+        },
+        {
+          "text": "Press 1",
+          "leads_to": "end_wrong_code",
+          "emoji": "1️⃣"
+        },
+        {
+          "text": "Press 2",
+          "leads_to": "end_wrong_code",
+          "emoji": "2️⃣"
+        },
+        {
+          "text": "Press 3",
+          "leads_to": "end_wrong_code",
+          "emoji": "3️⃣"
+        },
+        {
+          "text": "Press 4",
+          "leads_to": "end_wrong_code",
+          "emoji": "4️⃣"
+        },
+        {
+          "text": "Press 5",
+          "leads_to": "end_wrong_code",
+          "emoji": "5️⃣"
+        },
+        {
+          "text": "Press 6",
+          "leads_to": "end_wrong_code",
+          "emoji": "6️⃣"
+        },
+        {
+          "text": "Leave the keypad",
+          "leads_to": "painting_remove",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "end_wrong_code": {
+      "text": "A shrill error tone sounds. You've entered the wrong code. You sense someone behind you. Before you can turn around, someone puts their hands around your neck and begins to strangle you. Time to rewind...",
+      "type": "end",
+      "emoji": "🔒"
+    },
+
+    "safe_contents": {
+      "text": "The keypad beeps and a wall compartment beside the keyoad slides open, revealing a small safe. Inside, you find a half-eaten box of cereal... and three pieces from it laid side by side ⭕ ⭕ ⭕. It seems to hint at something, but as you realize that, you feel something cold touching the back of your head. Time to rewind...",
+      "type": "end",
+      "emoji": "🍀"
+    },
+
+    "gun_discovery": {
+      "text": "The keypad beeps ominously, and a hidden panel in the nearby table clicks open. Inside is a revolver with a single bullet. This might be your ticket to escaping...",
+      "options": [
+        {
+          "text": "Take the gun and return to the main room",
+          "leads_to": "alternative_start",
+          "emoji": "🔫",
+          "effect": "gun"
+        }
+      ]
+    },
+
+    "alternative_start": {
+      "text": "You return to the middle of the room. It contains three things of note: a dusty painting on the wall, a refrigerator that hums faintly, and a door leading out into the hallway.",
+      "options": [
+        {
+          "text": "Examine the painting on the wall",
+          "leads_to": "painting_choice",
+          "emoji": "🖼️"
+        },
+        {
+          "text": "Open the door to the hallway",
+          "leads_to": "door_scene",
+          "emoji": "🚪"
+        },
+        {
+          "text": "Check the refrigerator",
+          "leads_to": "fridge_scene",
+          "emoji": "🥤"
+        }
+      ]
+    },
+
+    "door_scene": {
+      "text": "You carefully open the door to the hallway. A cleaner stands there, appearing startled. Something about their gaze makes you uneasy.",
+      "options": [
+        {
+          "text": "Ask the cleaner for help",
+          "leads_to": "end_cleaner_stab",
+          "emoji": "❓"
+        },
+        {
+          "text": "Shoot the cleaner",
+          "leads_to": "end_true_ending",
+          "emoji": "🔫",
+          "requires_effect": "gun"
+        },
+        {
+          "text": "Retreat to the safety of your room",
+          "leads_to": "alternative_start",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "end_cleaner_stab": {
+      "text": "The moment you speak, the cleaner lunges—blade flashing. A sharp pain sears through your side, and the world blurs into darkness. Just before everything fades, you catch a glimpse of a tattoo on their arm: 'first 5in of man'. Not that it matters now. Time to rewind...",
+      "type": "end",
+      "emoji": "☠️"
+    },
+
+    "fridge_scene": {
+      "text": "The refrigerator’s interior light flickers. Inside, you see a bottle of juice and a plate with leftover food. The air is stale, but you’re thirsty and hungry..",
+      "options": [
+        {
+          "text": "Drink the juice",
+          "leads_to": "end_poisoned",
+          "emoji": "🥤"
+        },
+        {
+          "text": "Eat the leftover food",
+          "leads_to": "end_poisoned",
+          "emoji": "🍛"
+        },
+        {
+          "text": "Close the fridge and return to the room",
+          "leads_to": "alternative_start",
+          "emoji": "↩️"
+        }
+      ]
+    },
+
+    "end_poisoned": {
+      "text": "Moments after consumtion, you feel your vision blur. Collapsing to the floor, you glance upward. On the ceiling you faintly see the number 'second 3' written in red. Then, darkness... Quickly, rewind.",
+      "type": "end",
+      "emoji": "💀"
+    },
+
+    "end_true_ending": {
+      "text": "Gun in hand, you don’t hesitate. A single shot rings out. The cleaner collapses, and you stand there, heart pounding. At last, no one can harm you. You are free—at least, for now.",
+      "type": "end",
+      "emoji": "🏆"
+    }
+  }
