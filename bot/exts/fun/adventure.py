@@ -246,7 +246,7 @@ class GameSession:
 
         # Run relevant action method
         if self.is_in_ending_room and emoji == "🔄":
-            # replay the game
+            # Restart the game, by creating a new session and attaching it to the same message.
             await self.stop()
             await self.start(self._ctx, self.game_code, self.message)
         else:
