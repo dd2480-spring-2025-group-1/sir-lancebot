@@ -1,4 +1,5 @@
 
+import asyncio
 import unittest
 import unittest.mock
 
@@ -18,6 +19,10 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
         self.sample_game = "three_little_pigs"
         self.no_game = "no_game"
         self.ctx = helpers.MockContext(bot=self.bot)
+        asyncio.run(self._setup_game_session())
+
+    async def _setup_game_session(self):
+        """Helper method to ensure event loop is running for async code."""
         self.game_session = adventure.GameSession(self.ctx, self.sample_game)
 
     async def test_new_adventure_game_not_found(self):
@@ -27,7 +32,7 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
 
         self.ctx.send.assert_called_once()
         message = self.ctx.send.call_args.args[0]
-        self.assertEqual(message, f'Game code "{self.no_game}" not found.')
+        self.assertEqual(message, f"Game code `{self.no_game}` not found.")
 
     async def test_new_adventure_game_found(self):
         """Test if the `new_adventure` command does not print any error message when game found."""
@@ -42,7 +47,7 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
 
         story = self.game_session._get_game_data()
         self.assertIn("start", story)
-        self.assertIn("ending_1", story)
+        self.assertIn("ending_1", story["other_rooms"])
 
     async def test_get_game_data_game_not_found(self):
         """Test if the `_get_game_data` command returns a GameCodeNotFoundError if the game_code does not exist."""
