@@ -1,0 +1,70 @@
+classDiagram
+  class Adventure {
+    list_adventures(ctx: Context) None
+    new_adventure(ctx: Context, game_code_or_index: str | None) None
+  }
+  class EndRoomData {
+    emoji : str
+    text : str
+    type : Literal['end']
+  }
+  class GameCodeNotFoundError {
+  }
+  class GameData {
+    other_rooms : dict[str, RoomData | EndRoomData]
+    start : RoomData
+  }
+  class GameInfo {
+    color : str
+    description : str
+    id : str
+    name : str
+    time : int
+  }
+  class GameSession {
+    all_options
+    author
+    available_options
+    current_room_data
+    destination
+    game_code : str | None
+    game_data : NoneType
+    game_info : NoneType
+    is_in_ending_room
+    message : NoneType
+    timeout_message : str
+    add_reactions() None
+    cancel_timeout() None
+    embed_message(room_data: RoomData | EndRoomData) Embed
+    notify_timeout() None
+    on_message_delete(message: Message) None
+    on_reaction_add(reaction: Reaction, user: User) None
+    pick_option(index: int) None
+    prepare() None
+    reset_timeout() None
+    send_available_game_codes() None
+    start(ctx: Context, game_code_or_index: str | None) 'GameSession'
+    stop() None
+    timeout() None
+    update_message() None
+  }
+  class OptionData {
+    text : str
+    leads_to : str
+    emoji : str
+    effect : NotRequired[str]
+    effect_restricts : NotRequired[str]
+    requires_effect : NotRequired[str]
+  }
+  class RoomData {
+    options : list[OptionData]
+    text : str
+  }
+  Cog --> Adventure : initializes the commands
+  Adventure --> GameSession : instantiates game session
+  Adventure --> GameInfo : list all available games
+  GameSession --> GameCodeNotFoundError : throws if game_code is invalid
+  GameSession --> GameData : retrieves using game_code
+  EndRoomData --* GameData : room_id
+  RoomData --* GameData : room_id, start
+  OptionData --* RoomData : options which affect next scenes
