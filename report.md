@@ -46,11 +46,11 @@ For each team member, how much time was spent in
     * TODO: Update this
 
 7. writing code;
-    * Kim - 10 hour(s)
+    * Kim - 12 hour(s)
     * TODO: Update this
 
 8. running code?
-    * Kim - 0.5 hour(s)
+    * Kim - 0.75 hour(s)
     * TODO: Update this
 
 For setting up tools and libraries (step 4), enumerate all dependencies
@@ -79,7 +79,7 @@ Scope (functionality and code affected):
         - [x] Display a list of available games.
         - [x] Display an error message if the game does not exist.
     - [x] Support multiple concurrent games.
-        - [x] One player can instantitate multiple games at once.
+        - [x] One player can instantiate multiple games at once.
         - [x] More than one game can be played at the same time, and only the player can react to their own game.
     - [] Add graphic assets to show off stuff like bosses on special rooms.
         - TODO: Update the above bullet point once the feature is implemented.
@@ -110,7 +110,7 @@ Optional (point 4): the patch is clean.
 * There are no whitespace changes as they're handled by linters in precommit hooks.
 
 Optional (point 5): considered for acceptance (passes all automated checks).
-* TODO: Update this with upstream PR link
+* [Link to upstream PR](https://github.com/python-discord/sir-lancebot/pull/1653)
 
 ## Test results
 
@@ -181,9 +181,9 @@ TOTAL                                                                         20
 
 ## UML class diagram and its description
 
-TODO: Update this when we finalize the UML diagram.
+Our UML class diagram is not annotated in the traditional sense, as there is practically no class-to-class relationships. There is, however, class-function-to-class relationships, which we annotated. Hopefully this will give a clear visualization of how `adventure.py` is structured.
 
-![Adventure classes](/adventure-classes.png)
+![Adventure UML class diagram](./adventure-classes.svg)
 
 ### Key changes/classes affected
 
@@ -194,11 +194,18 @@ To introduce the new feature, we only had to add `adventure.py` and some externa
 Essentially, the files are auto discovered. You just need to include `setup` function which adds `Adventure` as a cog. The `Adventure` class then acts as an entry point for all the commands available. When commands are ran, the `GameSession` class is instantiated, which includes all the business logic, event handlers, and helper functions for the actual game.
 
 Optional (point 1): Architectural overview.
-* TODO: Update this when we finalize the UML diagram.
+* We generated this UML diagram with the help of `pyreverse`. From the diagram, we can clearly observe how flat the architecture is. As we have previously mentioned, all the cogs (groups of commands) are auto discovered and loaded by the main `Bot` class.
+* Some classes are isolated on the right side, as they're mostly helper classes used by the cogs, which don't constitute a class-to-class relationship, hence no arrows.
+
+![Overall UML class diagram](./overall-classes.svg)
+
+* You might also find the package diagram interesting. From the diagram, we can once again observe a flat architecture, with most of the packages pointing to `bot.bot`.
+* In addition, `bot.utils` and `bot.constants` are heavily referenced across different packages, which is expected as they're intended to be reused as helper functions.
+![Overall UML package diagram](./overall-packages.svg)
 
 Optional (point 2): relation to design pattern(s).
 * We strictly followed the overall architecture and design pattern of the repository, as outlined above.
-* It is by nature, very similar to the `help.py` function. We can verify this and confirm that our new code follows the general coding style in terms of class and function segregation.
+* It is by nature, very similar to the `help.py` function. With this, we can verify and confirm that our new code follows the general coding style in terms of class and function segregation.
 * Implementation wise, we also adopted various utility and helper functions from the codebase instead of re-inventing our own.
 
 ## Overall experience
@@ -212,3 +219,4 @@ How did you grow as a team, using the Essence standard to evaluate yourself?
 Optional (point 6): How would you put your work in context with best software engineering practice?
 
 Optional (point 7): Is there something special you want to mention here?
+* We drew our UML class diagram in a scalable and reproducible way. We achieved this using `mermaid.js`, a javascript-based diagramming and charting tool that renders markdown-inspired text definitions to create and modify diagrams dynamically. The source file is currently stored as `adventure-classes.mmd` in the root directory, and can be rendered in real-time as HTML (see `adventure-classes.html`).
