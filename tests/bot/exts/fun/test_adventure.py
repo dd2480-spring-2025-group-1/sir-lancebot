@@ -19,11 +19,6 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
         self.sample_game = "three_little_pigs"
         self.no_game = "no_game"
         self.ctx = helpers.MockContext(bot=self.bot)
-        asyncio.run(self._setup_game_session())
-
-    async def _setup_game_session(self):
-        """Helper method to ensure event loop is running for async code."""
-        self.game_session = adventure.GameSession(self.ctx, self.sample_game)
 
     async def test_new_adventure_game_not_found(self):
         """Test if the `new_adventure` command correctly returns the error message when game not found."""
@@ -40,6 +35,20 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
         await self.cog.new_adventure(self.cog, self.ctx, self.sample_game)
 
         self.ctx.send.assert_not_called()
+
+class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
+    def setUp(self):
+        """Sets up fresh objects for each test."""
+        self.bot = helpers.MockBot()
+
+        self.sample_game = "three_little_pigs"
+        self.no_game = "no_game"
+        self.ctx = helpers.MockContext(bot=self.bot)
+        asyncio.run(self._setup_game_session())
+
+    async def _setup_game_session(self):
+        """Helper method to ensure event loop is running for async code."""
+        self.game_session = adventure.GameSession(self.ctx, self.sample_game)
 
     async def test_get_game_data_game_found(self):
         """Test if the `_get_game_data` command returns a valid dictionary of a story containing start and ending_1 keys."""  # noqa: E501
@@ -105,3 +114,21 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
 
         filtered_options = self.game_session.available_options
         self.assertEqual(len(list(filtered_options)), 3)
+
+    async def test_parse_game_code_fail_int(self):
+        """Test if the `_parse_game_code` command raises a TypeError when given an integer."""
+
+        with self.assertRaises(TypeError):
+            self.game_session._parse_game_code(1)
+
+    async def test_parse_game_code_pass(self):
+        """Test if the `_parse_game_code` command returns the correct game name when given a valid game code."""
+
+        name = self.game_session._parse_game_code("1")
+        self.assertEqual(name, "three_little_pigs")
+
+    async def test_parse_game_code_pass_unknown_game_code(self):
+        """Test if the `_parse_game_code` command returns the game code itself when given an unknown game code."""
+
+        name = self.game_session._parse_game_code("999")
+        self.assertEqual(name, "999")
