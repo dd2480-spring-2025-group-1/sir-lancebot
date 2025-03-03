@@ -1,6 +1,7 @@
 {
   "start": {
     "text": "A wolf is on the prowl! You are one of the three little pigs. Choose your starting action:",
+    "picture": "bad_wolf.jpeg",
     "options": [
       {
         "text": "Build a Straw House",
@@ -21,6 +22,7 @@
   },
   "straw_house_branch": {
     "text": "You've chosen to build a straw house. What do you do?",
+    "picture": "straw_house.jpeg",
     "options": [
       {
         "text": "Hurry and finish!",
@@ -36,6 +38,7 @@
   },
   "stick_house_branch": {
     "text": "You've chosen to build a stick house. What do you do?",
+    "picture": "stick_house.jpeg",
     "options": [
       {
         "text": "Focus on speed.",
@@ -51,6 +54,7 @@
   },
   "brick_house_branch": {
     "text": "You've chosen to build a brick house. What do you do?",
+    "picture": "brick_house.jpeg",
     "options": [
       {
         "text": "Finish quickly, no time for extras!",
@@ -65,31 +69,37 @@
     ]
   },
   "ending_1": {
+    "picture": "straw_house_1.jpeg",
     "text": "The wolf huffs and puffs and blows your house down! You're captured!",
     "type": "end",
     "emoji": "🐺"
   },
   "ending_2": {
+    "picture": "straw_house_2.jpeg",
     "text": "The wolf still blows the house down, but you and the duck escape through the chimney!",
     "type": "end",
     "emoji": "💨"
   },
   "ending_3": {
+    "picture": "stick_house_1.jpeg",
     "text": "The wolf huffs and puffs and *mostly* blows your house down. You narrowly escape, but your friend, the rabbit, gets caught!",
     "type": "end",
     "emoji": "🐇"
   },
   "ending_4": {
+    "picture": "stick_house_2.jpeg",
     "text": "The wolf huffs and puffs, but the house holds! He tries to climb the roof, but you've prepared a trapdoor and he falls into a boiling pot of soup! You have wolf stew for dinner.",
     "type": "end",
     "emoji": "🍲"
   },
   "ending_5": {
+    "picture": "brick_house_1.jpeg",
     "text": "The wolf can't blow down the house. He tries the chimney, but you've blocked it! He gives up and goes hungry.",
     "type": "end",
     "emoji": "😔"
   },
   "ending_6": {
+    "picture": "brick_house_2.jpeg",
     "text": "The wolf tries everything, but the house is impenetrable. The boar chases him away. You live happily ever after, with excellent security.",
     "type": "end",
     "emoji": "🎉"
