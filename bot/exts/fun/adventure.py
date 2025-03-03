@@ -179,7 +179,8 @@ class GameSession:
     async def timeout(self) -> None:
         """Waits for a set number of seconds, then stops the game session."""
         await asyncio.sleep(self._timeout_seconds)
-        await self.notify_timeout()
+        if not self.is_in_ending_room:
+            await self.notify_timeout()
         await self.message.clear_reactions()
         await self.stop()
 
@@ -275,13 +276,13 @@ class GameSession:
         for reaction in pickable_emojis:
             await self.message.add_reaction(reaction)
 
-    def add_ending_reactions(self) -> None:
+    async def add_ending_reactions(self) -> None:
         """Adds the relevant reactions to the ending message which includes a replay reaction."""
         if not self.is_in_ending_room:
             return
 
         for reaction in self.ending_reactions:
-            self._bot.loop.create_task(self.message.add_reaction(reaction))
+            await self.message.add_reaction(reaction)
 
     def _format_room_data(self, room_data: RoomData) -> str:
         """Formats the room data into a string for the embed description."""
@@ -339,7 +340,7 @@ class GameSession:
         """Create and begin a game session based on the given game code."""
         session = cls(ctx, game_code_or_index)
 
-        #write the session in the given message
+        # Start the session with the given message
         if message:
             session.message = message
 

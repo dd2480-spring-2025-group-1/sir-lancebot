@@ -21,9 +21,9 @@
     "time": 60
   },
   {
-    "id": "frootloop",
-    "name": "Frootloop",
-    "description": "A cryptic note on your hand hints at an uncanny ability to rewind time",
+    "id": "fruitloop",
+    "name": "Fruitloop",
+    "description": "A cryptic note on your hand hints at an uncanny ability to rewind time.",
     "color": "0xFF0000",
     "time": 60
   }

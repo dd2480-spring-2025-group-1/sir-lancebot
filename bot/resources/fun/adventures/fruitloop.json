@@ -1,25 +1,25 @@
 {
-    "start": {
-      "text": "You awaken in a dim hotel room, head throbbing, with no recollection of how you got here. Scrawled on your hand, in shaky handwriting, are the words: 'You have the power to rewind time.' The small room contains three things of note: a dusty painting on the wall, a refrigerator that hums faintly, and a door leading out into the hallway.",
-      "options": [
-        {
-          "text": "Examine the painting on the wall",
-          "leads_to": "painting_choice",
-          "emoji": "🖼️"
-        },
-        {
-          "text": "Open the door to the hallway",
-          "leads_to": "door_scene",
-          "emoji": "🚪"
-        },
-        {
-          "text": "Check the refrigerator",
-          "leads_to": "fridge_scene",
-          "emoji": "🥤"
-        }
-      ]
-    },
-
+  "start": {
+    "text": "You awaken in a dim hotel room, head throbbing, with no recollection of how you got here. Scrawled on your hand, in shaky handwriting, are the words: 'You have the power to rewind time.' The small room contains three things of note: a dusty painting on the wall, a refrigerator that hums faintly, and a door leading out into the hallway.",
+    "options": [
+      {
+        "text": "Examine the painting on the wall",
+        "leads_to": "painting_choice",
+        "emoji": "🖼️"
+      },
+      {
+        "text": "Open the door to the hallway",
+        "leads_to": "door_scene",
+        "emoji": "🚪"
+      },
+      {
+        "text": "Check the refrigerator",
+        "leads_to": "fridge_scene",
+        "emoji": "🥤"
+      }
+    ]
+  },
+  "other_rooms": {
     "painting_choice": {
       "text": "The painting is covered in a thin layer of dust. A faint shape suggests there might be something hidden behind it. You sense two possible actions...",
       "options": [
@@ -393,7 +393,7 @@
     },
 
     "safe_contents": {
-      "text": "The keypad beeps and a wall compartment beside the keyoad slides open, revealing a small safe. Inside, you find a half-eaten box of cereal... and three pieces from it laid side by side ⭕ ⭕ ⭕. It seems to hint at something, but as you realize that, you feel something cold touching the back of your head. Time to rewind...",
+      "text": "The keypad beeps and a wall compartment beside the keypad slides open, revealing a small safe. Inside, you find a half-eaten box of cereal... and three pieces from it laid side by side ⭕ ⭕ ⭕. It seems to hint at something, but as you realize that, you feel something cold touching the back of your head. Time to rewind...",
       "type": "end",
       "emoji": "🍀"
     },
@@ -454,7 +454,7 @@
     },
 
     "end_cleaner_stab": {
-      "text": "The moment you speak, the cleaner lunges—blade flashing. A sharp pain sears through your side, and the world blurs into darkness. Just before everything fades, you catch a glimpse of a tattoo on their arm: 'first 5in of man'. Not that it matters now. Time to rewind...",
+      "text": "The moment you speak, the cleaner lunges — blade flashing. A sharp pain sears through your side, and the world blurs into darkness. Just before everything fades, you catch a glimpse of a tattoo on their arm: 'fir5t sin of man'. Not that it matters now. Time to rewind...",
       "type": "end",
       "emoji": "☠️"
     },
@@ -481,14 +481,15 @@
     },
 
     "end_poisoned": {
-      "text": "Moments after consumtion, you feel your vision blur. Collapsing to the floor, you glance upward. On the ceiling you faintly see the number 'second 3' written in red. Then, darkness... Quickly, rewind.",
+      "text": "Moments after consumption, you feel your vision blur. Collapsing to the floor, you glance upward. On the ceiling you faintly see the number 's3cond' written in red. Then, darkness... Quickly, rewind.",
       "type": "end",
       "emoji": "💀"
     },
 
     "end_true_ending": {
-      "text": "Gun in hand, you don’t hesitate. A single shot rings out. The cleaner collapses, and you stand there, heart pounding. At last, no one can harm you. You are free—at least, for now.",
+      "text": "Gun in hand, you don’t hesitate. A single shot rings out. The cleaner collapses, and you stand there, heart pounding. At last, no one can harm you. You are free — at least, for now.",
       "type": "end",
       "emoji": "🏆"
     }
   }
+}
