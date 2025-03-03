@@ -3,27 +3,18 @@ import asyncio
 import json
 from contextlib import suppress
 from pathlib import Path
-from typing import Literal, NamedTuple, NotRequired, TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 from discord import Embed, HTTPException, Message, Reaction, User
 from discord.ext import commands
-from discord.ext.commands import Cog as DiscordCog, Command, Context
+from discord.ext.commands import Cog as DiscordCog, Context, clean_content
 from pydis_core.utils.logging import get_logger
+from pydis_core.utils.scheduling import create_task
 
 from bot import constants
 from bot.bot import Bot
 
-
-class Cog(NamedTuple):
-    """Show information about a Cog's name, description and commands."""
-
-    name: str
-    description: str
-    commands: list[Command]
-
-
 log = get_logger(__name__)
-
 
 class GameInfo(TypedDict):
     """A dictionary containing the game information. Used in `available_games.json`."""
@@ -85,7 +76,7 @@ class GameData(TypedDict):
     """
 
     start: RoomData
-    __annotations__: dict[str, RoomData | EndRoomData]
+    other_rooms: dict[str, RoomData | EndRoomData]
 
 
 class GameCodeNotFoundError(ValueError):
@@ -116,8 +107,8 @@ class GameSession:
         self.game_info = None
         if game_code_or_index:
             self.game_code = self._parse_game_code(game_code_or_index)
-            self.game_data = self._get_game_data()
             self.game_info = self._get_game_info()
+            self.game_data = self._get_game_data()
 
         # store relevant discord info
         self.author = ctx.author
@@ -143,10 +134,13 @@ class GameSession:
         # sanitize the game code to prevent directory traversal attacks.
         game_code = Path(game_code_or_index).name
 
-        # convert index to game code if it's a number
+        # convert index to game code if it's a valid number that is in range.
+        # otherwise, return the game code as is, assuming it's a valid game code.
+        # if game code is not valid, errors will be raised later when trying to load the game info.
         try:
             index = int(game_code_or_index)
-            game_code = AVAILABLE_GAMES[index - 1]["id"]
+            if 1 <= index <= len(AVAILABLE_GAMES):
+                game_code = AVAILABLE_GAMES[index - 1]["id"]
         except (ValueError, IndexError):
             pass
 
@@ -163,7 +157,11 @@ class GameSession:
             )
             return game_data
         except FileNotFoundError:
-            raise GameCodeNotFoundError(f'Game code "{game_code}" not found.')
+            log.error(
+                "Game located in `available_games.json`, but game data not found. Game code: %s",
+                game_code
+            )
+            raise GameCodeNotFoundError(f"Game code `{game_code}` not found.")
 
     def _get_game_info(self) -> GameInfo:
         """Returns the game info for the given game code."""
@@ -172,10 +170,7 @@ class GameSession:
         try:
             return AVAILABLE_GAMES_DICT[game_code]
         except KeyError:
-            log.error(
-                "Game data retrieved, but game info not found. Did you forget to add it to `available_games.json`?"
-            )
-            raise GameCodeNotFoundError(f'Game code "{game_code}" not found.')
+            raise GameCodeNotFoundError(f"Game code `{game_code}` not found.")
 
     async def notify_timeout(self) -> None:
         """Notifies the user that the session has timed out."""
@@ -198,7 +193,7 @@ class GameSession:
         self.cancel_timeout()
 
         # recreate the timeout task
-        self._timeout_task = self._bot.loop.create_task(self.timeout())
+        self._timeout_task = create_task(self.timeout())
 
     async def send_available_game_codes(self) -> None:
         """Sends a list of all available game codes."""
@@ -263,14 +258,14 @@ class GameSession:
     async def prepare(self) -> None:
         """Sets up the game events, message and reactions."""
         if self.game_data:
-            await self.update_message("start")
+            await self.update_message()
             self._bot.add_listener(self.on_reaction_add)
             self._bot.add_listener(self.on_message_delete)
         else:
             await self.send_available_game_codes()
 
 
-    def add_reactions(self) -> None:
+    async def add_reactions(self) -> None:
         """Adds the relevant reactions to the message based on if options are available in the current room."""
         if self.is_in_ending_room:
             return
@@ -278,7 +273,7 @@ class GameSession:
         pickable_emojis = [option["emoji"] for option in self.available_options]
 
         for reaction in pickable_emojis:
-            self._bot.loop.create_task(self.message.add_reaction(reaction))
+            await self.message.add_reaction(reaction)
 
     def add_ending_reactions(self) -> None:
         """Adds the relevant reactions to the ending message which includes a replay reaction."""
@@ -320,10 +315,9 @@ class GameSession:
 
         return embed
 
-    async def update_message(self, room_id: str) -> None:
+    async def update_message(self) -> None:
         """Sends the initial message, or changes the existing one to the given room ID."""
-        target_room_data = self.game_data[room_id]
-        embed_message = self.embed_message(target_room_data)
+        embed_message = self.embed_message(self.current_room_data)
 
         if not self.message:
             self.message = await self.destination.send(embed=embed_message)
@@ -333,7 +327,7 @@ class GameSession:
         if self.is_in_ending_room:
             self.add_ending_reactions()
         else:
-            self.add_reactions()
+            await self.add_reactions()
 
     @classmethod
     async def start(
@@ -362,14 +356,12 @@ class GameSession:
     @property
     def is_in_ending_room(self) -> bool:
         """Check if the game has ended."""
-        current_room = self._current_room
-
-        return self.game_data[current_room].get("type") == "end"
+        return self.current_room_data.get("type") == "end"
 
     @property
     def all_options(self) -> list[OptionData]:
         """Get all options in the current room."""
-        return self.game_data[self._current_room]["options"]
+        return self.current_room_data.get("options", [])
 
     @property
     def available_options(self) -> bool:
@@ -389,6 +381,16 @@ class GameSession:
 
         return filtered_options
 
+    @property
+    def current_room_data(self) -> RoomData | EndRoomData:
+        """Get the current room data."""
+        current_room = self._current_room
+
+        if current_room == "start":
+            return self.game_data[current_room]
+
+        return self.game_data["other_rooms"][current_room]
+
     async def pick_option(self, index: int) -> None:
         """Event that is called when the user picks an option."""
         chosen_option = self.all_options[index]
@@ -403,7 +405,7 @@ class GameSession:
         self._current_room = next_room
 
         # update the message with the new room
-        await self.update_message(next_room)
+        await self.update_message()
 
 
 class Adventure(DiscordCog):
@@ -413,7 +415,14 @@ class Adventure(DiscordCog):
     async def new_adventure(self, ctx: Context, game_code_or_index: str | None = None) -> None:
         """Wanted to slay a dragon? Embark on an exciting journey through text-based RPG adventure."""
         try:
-            await GameSession.start(ctx, game_code_or_index)
+            # prevent malicious pings and mentions
+            santiser = clean_content(fix_channel_mentions=True)
+            sanitised_game_code_or_index = await santiser.convert(ctx, game_code_or_index)
+
+            # quality of life: if the user accidentally wraps the game code in backticks, process it anyway
+            sanitised_game_code_or_index = sanitised_game_code_or_index.strip("`")
+
+            await GameSession.start(ctx, sanitised_game_code_or_index)
         except GameCodeNotFoundError as error:
             await ctx.send(str(error))
 
