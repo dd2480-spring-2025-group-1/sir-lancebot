@@ -16,7 +16,7 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
 
         self.cog = adventure.Adventure()
 
-        self.sample_game = "three_little_pigs"
+        self.sample_game_base = "three_little_pigs"
         self.no_game = "no_game"
         self.ctx = helpers.MockContext(bot=self.bot)
 
@@ -32,7 +32,7 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
     async def test_new_adventure_game_found(self):
         """Test if the `new_adventure` command does not print any error message when game found."""
 
-        await self.cog.new_adventure(self.cog, self.ctx, self.sample_game)
+        await self.cog.new_adventure(self.cog, self.ctx, self.sample_game_base)
 
         self.ctx.send.assert_not_called()
 
@@ -41,18 +41,21 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         """Sets up fresh objects for each test."""
         self.bot = helpers.MockBot()
 
-        self.sample_game = "three_little_pigs"
+        self.sample_game_base = "three_little_pigs"
+        self.sample_game_locked = "Gurfelts_haunted_mansion"
+        self.sample_game_replay = "fruitloop"
+        self.sample_game_dragon = "dragon_slayer"
         self.no_game = "no_game"
         self.ctx = helpers.MockContext(bot=self.bot)
         asyncio.run(self._setup_game_session())
 
     async def _setup_game_session(self):
         """Helper method to ensure event loop is running for async code."""
-        self.game_session = adventure.GameSession(self.ctx, self.sample_game)
+        self.game_session = adventure.GameSession(self.ctx, self.sample_game_base)
 
     async def test_get_game_data_game_found(self):
         """Test if the `_get_game_data` command returns a valid dictionary of a story containing start and ending_1 keys."""  # noqa: E501
-        self.game_session.game_code = self.sample_game
+        self.game_session.game_code = self.sample_game_base
 
         story = self.game_session._get_game_data()
         self.assertIn("start", story)
@@ -69,7 +72,7 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
     async def test_embed_message_footer(self):
         """Test if the `embed_message` command returns an embed with "time running out" hint in the footer."""
 
-        message = self.game_session.embed_message(self.game_session.game_data["start"])
+        message = self.game_session.embed_message(self.game_session.game_data["start"], self.game_session._choices)
         self.assertEqual(message.footer.text,"⏳ Hint: time is running out! You must make a choice within 30 seconds.")
 
     async def test_format_room_data(self):
