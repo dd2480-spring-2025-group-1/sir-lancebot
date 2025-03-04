@@ -149,11 +149,6 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         with self.assertRaises(adventure.GameCodeNotFoundError):
             self.game_session._get_game_info()
 
-    # async def test_format_log_data(self):
-    #     game_session = adventure.GameSession(self.ctx, self.sample_game_replay)
-    #     mes = game_session._format_log_data(game_session._choices, game_session.game_info["name"])
-    #     print(mes)
-
     async def test_is_showing_logs_ending_logs(self):
         """Test if the `_is_showing_logs` method returns a true when in an ending room and `_showing_logs` is true."""
 
@@ -175,3 +170,31 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         self.game_session._current_room = "ending_2"
 
         self.assertFalse(self.game_session.is_showing_logs)
+
+    async def test_pick_option_room_advances(self):
+        """Test if the `pick_option` method changes the current room."""
+
+        first_room = self.game_session._current_room
+        await self.game_session.pick_option(2)
+        self.assertNotEqual(first_room, self.game_session._current_room)
+
+    async def test_pick_option_room_advances_to_correct_target(self):
+        """Test if the `pick_option` method advances to the desired target room."""
+
+        target = list(self.game_session.available_options)[2]["leads_to"]
+        await self.game_session.pick_option(2)
+        self.assertEqual(self.game_session._current_room, target)
+
+    async def test_format_log_data(self):
+        """Test if the `_format_log_data` method shows the correct path."""
+
+        first_option = self.game_session.all_options[2]["text"]
+        await self.game_session.pick_option(2)
+        second_option = self.game_session.all_options[1]["text"]
+        await self.game_session.pick_option(1)
+
+        self.game_session._showing_logs = True
+        log = self.game_session._format_log_data(self.game_session._choices, self.game_session.game_info["name"])
+        self.assertIn(self.game_session.game_info["name"],log)
+        self.assertIn(first_option,log)
+        self.assertIn(second_option,log)
