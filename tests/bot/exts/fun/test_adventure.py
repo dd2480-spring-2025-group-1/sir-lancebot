@@ -110,25 +110,38 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(self.game_session.is_in_ending_room)
 
     async def test_available_options(self):
-        """Test if the `available_options` command returns all options when the game session is in the first room"""
+        """Test if the `available_options` method returns all options when the game session is in the first room"""
 
         filtered_options = self.game_session.available_options
         self.assertEqual(len(list(filtered_options)), 3)
 
     async def test_parse_game_code_fail_int(self):
-        """Test if the `_parse_game_code` command raises a TypeError when given an integer."""
+        """Test if the `_parse_game_code` method raises a TypeError when given an integer."""
 
         with self.assertRaises(TypeError):
             self.game_session._parse_game_code(1)
 
     async def test_parse_game_code_pass(self):
-        """Test if the `_parse_game_code` command returns the correct game name when given a valid game code."""
+        """Test if the `_parse_game_code` method returns the correct game name when given a valid game code."""
 
         name = self.game_session._parse_game_code("1")
         self.assertEqual(name, "three_little_pigs")
 
     async def test_parse_game_code_pass_unknown_game_code(self):
-        """Test if the `_parse_game_code` command returns the game code itself when given an unknown game code."""
+        """Test if the `_parse_game_code` method returns the game code itself when given an unknown game code."""
 
         name = self.game_session._parse_game_code("999")
         self.assertEqual(name, "999")
+
+    async def test_get_game_info_valid_game_code(self):
+        """Test if the `_get_game_info` method returns a dictionary with the expected elements."""
+
+        info = self.game_session._get_game_info()
+        self.assertTrue(all(key in info for key in ["id", "name", "description", "color", "time"]))
+
+    async def test_get_game_info_invalid_code(self):
+        """Test if the `_get_game_info` method returns a dictionary with the expected elements."""
+
+        self.game_session.game_code = self.no_game
+        with self.assertRaises(adventure.GameCodeNotFoundError):
+            self.game_session._get_game_info()
