@@ -148,3 +148,30 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         self.game_session.game_code = self.no_game
         with self.assertRaises(adventure.GameCodeNotFoundError):
             self.game_session._get_game_info()
+
+    # async def test_format_log_data(self):
+    #     game_session = adventure.GameSession(self.ctx, self.sample_game_replay)
+    #     mes = game_session._format_log_data(game_session._choices, game_session.game_info["name"])
+    #     print(mes)
+
+    async def test_is_showing_logs_ending_logs(self):
+        """Test if the `_is_showing_logs` method returns a true when in an ending room and `_showing_logs` is true."""
+
+        self.game_session._current_room = "ending_2"
+        self.game_session._showing_logs = True
+
+        self.assertTrue(self.game_session.is_showing_logs)
+
+    async def test_is_showing_logs_not_ending(self):
+        """Test if the `_is_showing_logs` method returns a false when not in ending room and `_showing_logs` is true."""
+
+        self.game_session._showing_logs = True
+
+        self.assertFalse(self.game_session.is_showing_logs)
+
+    async def test_is_showing_logs_ending_no_logs(self):
+        """Test if the `_is_showing_logs` method returns a false when in ending room and `_showing_logs` is false."""
+
+        self.game_session._current_room = "ending_2"
+
+        self.assertFalse(self.game_session.is_showing_logs)
