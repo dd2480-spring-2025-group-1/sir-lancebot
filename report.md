@@ -30,27 +30,33 @@ For each team member, how much time was spent in
 
 3. reading documentation;
     * Kim - 0.25 hour(s)
+    * Johan - 0.5 hour(s)
     * TODO: Update this
 
 4. configuration and setup;
     * Kim - 0.5 hour(s)
     * Arvid - 1 hour(s)
+    * Johan - 1.5 hour(s)
     * TODO: Update this
 
 5. analyzing code/output;
     * Kim - 2 hour(s)
+    * Johan - 1 hour(s)
     * TODO: Update this
 
 6. writing documentation;
     * Kim - 2 hour(s)
+    * Johan - 2.5 hour(s)
     * TODO: Update this
 
 7. writing code;
     * Kim - 12 hour(s)
+    * Johan - 10 hour(s)
     * TODO: Update this
 
 8. running code?
     * Kim - 0.75 hour(s)
+    * Johan - 1 hour(s)
     * TODO: Update this
 
 For setting up tools and libraries (step 4), enumerate all dependencies
