@@ -325,6 +325,7 @@ class GameSession:
     async def start(cls, ctx: Context, game_code_or_index: str | None = None) -> "GameSession":
         """Create and begin a game session based on the given game code."""
         session = cls(ctx, game_code_or_index)
+
         await session.prepare()
 
         return session
