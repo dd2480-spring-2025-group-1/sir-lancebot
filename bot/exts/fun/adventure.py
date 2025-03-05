@@ -127,6 +127,7 @@ class GameSession:
         )
         self._timeout_task = None
         self.reset_timeout()
+        self.ending_reactions = ["🔄"]
 
     def _parse_game_code(self, game_code_or_index: str) -> str:
         """Returns the actual game code for the given index/ game code."""
@@ -178,7 +179,8 @@ class GameSession:
     async def timeout(self) -> None:
         """Waits for a set number of seconds, then stops the game session."""
         await asyncio.sleep(self._timeout_seconds)
-        await self.notify_timeout()
+        if not self.is_in_ending_room:
+            await self.notify_timeout()
         await self.message.clear_reactions()
         await self.stop()
 
@@ -224,9 +226,13 @@ class GameSession:
         emoji = str(reaction.emoji)
 
         # check if valid action
-        acceptable_emojis = [option["emoji"] for option in self.available_options]
-        if emoji not in acceptable_emojis:
-            return
+        if self.is_in_ending_room:
+            if emoji not in self.ending_reactions:
+                return
+        else:
+            acceptable_emojis = [option["emoji"] for option in self.available_options]
+            if emoji not in acceptable_emojis:
+                return
 
         self.reset_timeout()
 
@@ -235,9 +241,14 @@ class GameSession:
             await self.message.clear_reactions()
 
         # Run relevant action method
-        all_emojis = [option["emoji"] for option in self.all_options]
+        if self.is_in_ending_room and emoji == "🔄":
+            # Restart the game, by creating a new session and attaching it to the same message.
+            await self.stop()
+            await self.start(self._ctx, self.game_code, self.message)
+        else:
+            all_emojis = [option["emoji"] for option in self.all_options]
 
-        await self.pick_option(all_emojis.index(emoji))
+            await self.pick_option(all_emojis.index(emoji))
 
 
     async def on_message_delete(self, message: Message) -> None:
@@ -265,6 +276,14 @@ class GameSession:
         for reaction in pickable_emojis:
             await self.message.add_reaction(reaction)
 
+    async def add_ending_reactions(self) -> None:
+        """Adds the relevant reactions to the ending message which includes a replay reaction."""
+        if not self.is_in_ending_room:
+            return
+
+        for reaction in self.ending_reactions:
+            await self.message.add_reaction(reaction)
+
     def _format_room_data(self, room_data: RoomData) -> str:
         """Formats the room data into a string for the embed description."""
         text = room_data["text"]
@@ -289,7 +308,7 @@ class GameSession:
             embed.description = room_data["text"]
             emoji = room_data["emoji"]
             embed.set_author(name=f"Game ended! {emoji}")
-            embed.set_footer(text=f"✨ Thanks for playing {current_game_name}!")
+            embed.set_footer(text=f"✨ Thanks for playing {current_game_name}!\n - use 🔄 to play again.")
         else:
             embed.description = self._format_room_data(room_data)
             embed.set_author(name=current_game_name)
@@ -307,14 +326,24 @@ class GameSession:
             await self.message.edit(embed=embed_message)
 
         if self.is_in_ending_room:
-            await self.stop()
+            await self.add_ending_reactions()
         else:
             await self.add_reactions()
 
     @classmethod
-    async def start(cls, ctx: Context, game_code_or_index: str | None = None) -> "GameSession":
+    async def start(
+        cls,
+        ctx: Context,
+        game_code_or_index: str | None = None,
+        message: Message | None = None
+        ) -> "GameSession":
         """Create and begin a game session based on the given game code."""
         session = cls(ctx, game_code_or_index)
+
+        # Start the session with the given message
+        if message:
+            session.message = message
+
         await session.prepare()
 
         return session
