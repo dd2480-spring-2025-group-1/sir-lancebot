@@ -214,7 +214,9 @@ TODO: Update this whole section.
 
 ***What are your main take-aways from this project? What did you learn?***
 
+One of the most valuable lessons we learned and arguably the main purpose of this project is how accessible contributing to open-source projects can be. We realized that by focusing on a specific part of a project, it is relatively easy to familiarize ourselves with the codebase and standards.  
 
+We also believe it is important to keep this in mind beyond the course. Contributing to open-source projects is a great way to discover new projects and continue practicing coding even after the course ends.
 
 ***How did you grow as a team, using the Essence standard to evaluate yourself?***
 
