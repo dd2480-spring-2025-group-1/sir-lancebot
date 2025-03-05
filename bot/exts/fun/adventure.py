@@ -326,7 +326,7 @@ class GameSession:
             await self.message.edit(embed=embed_message)
 
         if self.is_in_ending_room:
-            self.add_ending_reactions()
+            await self.add_ending_reactions()
         else:
             await self.add_reactions()
 
