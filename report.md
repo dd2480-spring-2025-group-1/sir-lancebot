@@ -96,7 +96,7 @@ Scope (functionality and code affected):
 The adventure game should be implemented in a way that it does not post dozens of messages every time you play a game (e.g. update a single embed, player input through emote reactions)
 ##### Requriment #1.1: Update embed
 The adventure game should update a single embed to tell the story
-##### Requriment #1.2: Input throug emote reactions
+##### Requriment #1.2: Input through emote reactions
 The adventure game should use emote reactions to navigate through the game
 
 #### Requirement #2: Implement a dynamic story
@@ -111,6 +111,8 @@ The adventure game should offer support for showing graphics of rooms and bosses
 #### Requirement #5: Secure against exploits
 The adventure game should not allow any exploits to be used through the user input.
 
+
+The tests have been traced to the respective requirements in the form of comments in the code. However, it was not feasible to create tests for requirement #4, thus there are no tests for this requirement. Tests for requirement #4 require a deeper lever of channel mocking that we were not able to produce.
 
 <!-- Optional (point 3): trace tests to requirements.
 * TODO: Update this section -->
