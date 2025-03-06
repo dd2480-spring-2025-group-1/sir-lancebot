@@ -45,8 +45,6 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
 
         self.sample_game_base = "three_little_pigs"
         self.sample_game_locked = "Gurfelts_haunted_mansion"
-        self.sample_game_replay = "fruitloop"
-        self.sample_game_dragon = "dragon_slayer"
         self.no_game = "no_game"
         self.ctx = helpers.MockContext(bot=self.bot)
         asyncio.run(self._setup_game_session())
@@ -218,3 +216,15 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn(self.game_session.game_info["name"],log)
         self.assertIn(first_option,log)
         self.assertIn(second_option,log)
+
+    # Test for requirement #2
+    async def test_available_options_locked_option(self):
+        """Test if the `available_options` method returns only unlocked options"""
+        game_session = adventure.GameSession(self.ctx, self.sample_game_locked)
+        await game_session.pick_option(1)
+        await game_session.pick_option(0)
+
+        all_options = game_session.all_options
+        filtered_options = game_session.available_options
+
+        self.assertNotEqual(len(list(filtered_options)), len(list(all_options)))
