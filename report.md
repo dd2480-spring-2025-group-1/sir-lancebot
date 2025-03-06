@@ -92,8 +92,21 @@ Scope (functionality and code affected):
 
 ## Requirements for the new feature
 
-Optional (point 3): trace tests to requirements.
-* TODO: Update this section
+Requirement #1: No noisy implementation
+    - The adventure game should be implemented in a way that it does not post dozens of messages every time you play a game (e.g. update a single embed, player input through emote reactions)
+
+Requirement #2: Implement a dynamic story
+    - The adventure game should be able to handle multiple endings and support unlocking paths depending on the players choices
+
+Requirement #3: Support for graphics
+    - The adventure game should offer support for showing graphics of rooms and bosses
+
+Requirement #4: Extensibility
+    - The adventure game should support adding new stories (e.g. by crating a YAML, TOML or JSON file) in order to allow for other members of the community to easily create new adventures
+
+
+<!-- Optional (point 3): trace tests to requirements.
+* TODO: Update this section -->
 
 ## Code changes
 
