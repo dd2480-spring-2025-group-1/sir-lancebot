@@ -92,20 +92,24 @@ Scope (functionality and code affected):
 
 ## Requirements for the new feature
 
-Requirement #1: No noisy implementation
-    - The adventure game should be implemented in a way that it does not post dozens of messages every time you play a game (e.g. update a single embed, player input through emote reactions)
+#### Requirement #1: No noisy implementation
+The adventure game should be implemented in a way that it does not post dozens of messages every time you play a game (e.g. update a single embed, player input through emote reactions)
+##### Requriment #1.1: Update embed
+The adventure game should update a single embed to tell the story
+##### Requriment #1.2: Input throug emote reactions
+The adventure game should use emote reactions to navigate through the game
 
-Requirement #2: Implement a dynamic story
-    - The adventure game should be able to handle multiple endings and support unlocking paths depending on the players choices
+#### Requirement #2: Implement a dynamic story
+The adventure game should be able to handle multiple endings and support unlocking paths depending on the players choices
 
-Requirement #3: Extensibility
-    - The adventure game should support adding new stories (e.g. by crating a YAML, TOML or JSON file) in order to allow for other members of the community to easily create new adventures
+#### Requirement #3: Extensibility
+The adventure game should support adding new stories (e.g. by crating a YAML, TOML or JSON file) in order to allow for other members of the community to easily create new adventures
 
-Requirement #4: Support for graphics
-    - The adventure game should offer support for showing graphics of rooms and bosses
+#### Requirement #4: Support for graphics
+The adventure game should offer support for showing graphics of rooms and bosses
 
-Requirement #5: Secure against exploits
-    - The adventure game should not allow any exploits to be used through the user input.
+#### Requirement #5: Secure against exploits
+The adventure game should not allow any exploits to be used through the user input.
 
 
 <!-- Optional (point 3): trace tests to requirements.
