@@ -218,9 +218,19 @@ Optional (point 2): relation to design pattern(s).
 
 TODO: Update this whole section.
 
-What are your main take-aways from this project? What did you learn?
+***What are your main take-aways from this project? What did you learn?***
 
-How did you grow as a team, using the Essence standard to evaluate yourself?
+One of the most valuable lessons we learned and arguably the main purpose of this project is how accessible contributing to open-source projects can be. We realized that by focusing on a specific part of a project, it is relatively easy to familiarize ourselves with the codebase and standards.  
+
+We also believe it is important to keep this in mind beyond the course. Contributing to open-source projects is a great way to discover new projects and continue practicing coding even after the course ends.
+
+***How did you grow as a team, using the Essence standard to evaluate yourself?***
+
+We believe we have finally reached the **Performing** stage. Our transition from **Collaborating** to **Performing** is largely due to our ability to minimize wasted effort and work more efficiently. This improvement comes from establishing common coding styles and adapting to the conventions of existing projects, allowing us to navigate a changing development context more effectively.  
+
+By mastering these skills, we now require less assistance from each other, and the PR review process has become easier than ever. Additionally, all planned features and commitments were successfully delivered unlike our previous project, where we worked until the last minute and failed to complete decided features before the presentation. There are however some improvements that can be made regarding communication which could be more honest and regular, even when someone hasn't done any work, because the group needs to know if we are making progress or not.
+
+That said, given the project's small scale and team size, our **Performing** state may not fully align with what is expected in an industry-level project. If our final presentation is successful, we could argue that we will have reached the **Adjourned** stage, as everyone will have completed their assignments and presentations.
 
 Optional (point 6): How would you put your work in context with best software engineering practice?
 
