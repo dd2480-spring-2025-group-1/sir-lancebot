@@ -98,11 +98,14 @@ Requirement #1: No noisy implementation
 Requirement #2: Implement a dynamic story
     - The adventure game should be able to handle multiple endings and support unlocking paths depending on the players choices
 
-Requirement #3: Support for graphics
+Requirement #3: Extensibility
+    - The adventure game should support adding new stories (e.g. by crating a YAML, TOML or JSON file) in order to allow for other members of the community to easily create new adventures
+
+Requirement #4: Support for graphics
     - The adventure game should offer support for showing graphics of rooms and bosses
 
-Requirement #4: Extensibility
-    - The adventure game should support adding new stories (e.g. by crating a YAML, TOML or JSON file) in order to allow for other members of the community to easily create new adventures
+Requirement #5: Secure against exploits
+    - The adventure game should not allow any exploits to be used through the user input.
 
 
 <!-- Optional (point 3): trace tests to requirements.
