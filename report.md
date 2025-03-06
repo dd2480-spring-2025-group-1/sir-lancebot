@@ -157,15 +157,17 @@ platform linux -- Python 3.12.9, pytest-8.3.4, pluggy-1.5.0
 rootdir: /home/mk/Downloads/gitthings/sir-lancebot
 configfile: pyproject.toml
 plugins: cov-6.0.0, anyio-4.8.0, subtests-0.14.1, xdist-3.6.1
-created: 4/4 workers
-4 workers [40 items]
+created: 1/1 worker
+1 worker [51 items]
 
-........................................                                 [100%]
+...................................................                      [100%]
 =============================== warnings summary ===============================
 [truncated]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-======================= 40 passed, 30 warnings in 2.69s ========================
+==================================== PASSES ====================================
+======================= 51 passed, 35 warnings in 1.78s ========================
+
 ```
 
 One can also get a coverage report by first running `poetry run task test-cov`, and then `poetry run task report --functions bot/exts/fun/adventure.py` to get the coverage report for the `adventure.py` file by functions.
@@ -173,38 +175,42 @@ One can also get a coverage report by first running `poetry run task test-cov`, 
 Attached below is a sample run of the coverage report after our implementation:
 ```
 $ poetry run task report --functions bot/exts/fun/adventure.py
-
 Name                                                                        Stmts   Miss Branch BrPart  Cover
 -------------------------------------------------------------------------------------------------------------
-bot/exts/fun/adventure.py                                                     202     50     26      7    71%
+bot/exts/fun/adventure.py                                                     257     56     62      9    71%
 bot/exts/fun/adventure.py: function Adventure.list_adventures                   1      1      0      0     0%
-bot/exts/fun/adventure.py: function Adventure.new_adventure                     4      0      0      0   100%
+bot/exts/fun/adventure.py: function Adventure.new_adventure                     7      0      0      0   100%
 bot/exts/fun/adventure.py: function GameCodeNotFoundError.__init__              1      0      0      0   100%
-bot/exts/fun/adventure.py: function GameSession.__init__                       19      0      2      1    95%
+bot/exts/fun/adventure.py: function GameSession.__init__                       22      0      2      1    96%
+bot/exts/fun/adventure.py: function GameSession._format_log_data                2      0      0      0   100%
 bot/exts/fun/adventure.py: function GameSession._format_room_data               3      0      0      0   100%
-bot/exts/fun/adventure.py: function GameSession._get_game_data                  6      0      0      0   100%
-bot/exts/fun/adventure.py: function GameSession._get_game_info                  6      3      0      0    50%
-bot/exts/fun/adventure.py: function GameSession._parse_game_code                7      1      0      0    86%
+bot/exts/fun/adventure.py: function GameSession._get_game_data                  7      0      0      0   100%
+bot/exts/fun/adventure.py: function GameSession._get_game_info                  5      0      0      0   100%
+bot/exts/fun/adventure.py: function GameSession._parse_game_code                8      0      2      0   100%
+bot/exts/fun/adventure.py: function GameSession.add_ending_reactions            4      1      4      1    75%
+bot/exts/fun/adventure.py: function GameSession.add_log_reactions               3      3      2      0     0%
 bot/exts/fun/adventure.py: function GameSession.add_reactions                   5      1      4      1    78%
 bot/exts/fun/adventure.py: function GameSession.all_options                     1      0      0      0   100%
 bot/exts/fun/adventure.py: function GameSession.available_options               2      0      0      0   100%
 bot/exts/fun/adventure.py: function GameSession.cancel_timeout                  2      1      2      1    50%
-bot/exts/fun/adventure.py: function GameSession.embed_message                  12      4      2      1    64%
-bot/exts/fun/adventure.py: function GameSession.is_in_ending_room               2      0      0      0   100%
+bot/exts/fun/adventure.py: function GameSession.current_room_data               4      0      2      0   100%
+bot/exts/fun/adventure.py: function GameSession.embed_message                  16      3      4      1    80%
+bot/exts/fun/adventure.py: function GameSession.is_in_ending_room               1      0      0      0   100%
+bot/exts/fun/adventure.py: function GameSession.is_showing_logs                 1      0      0      0   100%
 bot/exts/fun/adventure.py: function GameSession.notify_timeout                  1      1      0      0     0%
 bot/exts/fun/adventure.py: function GameSession.on_message_delete               2      2      2      0     0%
-bot/exts/fun/adventure.py: function GameSession.on_reaction_add                13     13      6      0     0%
-bot/exts/fun/adventure.py: function GameSession.pick_option                     8      8      2      0     0%
+bot/exts/fun/adventure.py: function GameSession.on_reaction_add                27     27     20      0     0%
+bot/exts/fun/adventure.py: function GameSession.pick_option                     9      1      2      1    82%
 bot/exts/fun/adventure.py: function GameSession.prepare                         5      1      2      1    71%
 bot/exts/fun/adventure.py: function GameSession.reset_timeout                   2      0      0      0   100%
 bot/exts/fun/adventure.py: function GameSession.send_available_game_codes       4      4      0      0     0%
-bot/exts/fun/adventure.py: function GameSession.start                           3      0      0      0   100%
+bot/exts/fun/adventure.py: function GameSession.start                           5      1      2      1    71%
 bot/exts/fun/adventure.py: function GameSession.stop                            3      3      0      0     0%
-bot/exts/fun/adventure.py: function GameSession.timeout                         4      4      0      0     0%
-bot/exts/fun/adventure.py: function GameSession.update_message                  8      2      4      2    67%
+bot/exts/fun/adventure.py: function GameSession.timeout                         5      4      2      0    14%
+bot/exts/fun/adventure.py: function GameSession.update_message                 16      1     10      1    92%
 bot/exts/fun/adventure.py: function setup                                       1      1      0      0     0%
 -------------------------------------------------------------------------------------------------------------
-TOTAL                                                                         202     50     26      7    71%
+TOTAL                                                                         257     56     62      9    71%
 ```
 
 ## UML class diagram and its description
