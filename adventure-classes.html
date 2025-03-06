@@ -1,0 +1,27 @@
+<html>
+  <head>
+    <style>
+      body {
+        background-color: hsla(220 17.647% 20% / 1);
+        color: #d4d4d4;
+        font-family: 'Arial', sans-serif;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({ theme: 'dark' });
+      fetch("./adventure-classes.mmd")
+        .then((res) => res.text())
+        .then((text) => mermaid.render('graphDiv', text))
+        .then(({svg}) => {
+          const mermaidContainer = document.querySelector(".mmd");
+          mermaidContainer.innerHTML = svg;
+        })
+        .catch((e) => console.error(e));
+    </script>
+  </head>
+  <body>
+    <div class="mmd">
+    </div>
+  </body>
+</html>

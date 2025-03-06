@@ -13,10 +13,11 @@ from sentry_sdk.integrations.redis import RedisIntegration
 
 from bot.constants import Client, GIT_SHA, Logging
 
+get_logger = core_logging.get_logger
 
 def setup() -> None:
     """Set up loggers."""
-    root_logger = core_logging.get_logger()
+    root_logger = get_logger()
 
     if Logging.file_logs:
         # Set up file logging

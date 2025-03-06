@@ -5,7 +5,7 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Literal, NotRequired, TypedDict
 
-from discord import Embed, HTTPException, Message, Reaction, User
+from discord import Embed, File, HTTPException, Message, Reaction, User
 from discord.ext import commands
 from discord.ext.commands import Cog as DiscordCog, Context, clean_content
 from pydis_core.utils.logging import get_logger
@@ -50,6 +50,7 @@ class RoomData(TypedDict):
     """A dictionary containing the room data of the game. Part of the AdventureData dictionary."""
 
     text: str
+    picture: str | None
     options: list[OptionData]
 
 
@@ -72,7 +73,8 @@ class GameData(TypedDict):
     The keys are the room names, and the values are dictionaries containing the room data,
     which can be either a RoomData or an EndRoomData.
 
-    There must exist only one "start" key in the dictionary. However, there can be multiple endings, i.e., EndRoomData.
+    There must exist only one "start" key in the dictionary. However, there can be multiple endings, i.e.,
+    EndRoomData.
     """
 
     start: RoomData
@@ -118,7 +120,9 @@ class GameSession:
         # init session states
         self._current_room: str = "start"
         self._path: list[str] = [self._current_room]
+        self._choices: list[str] = []
         self._effects: list[str] = []
+        self._showing_logs: bool = False
 
         # session settings
         self._timeout_seconds = 30 if self.game_info is None else self.game_info["time"]
@@ -127,6 +131,7 @@ class GameSession:
         )
         self._timeout_task = None
         self.reset_timeout()
+        self.ending_reactions = {"replay": "🔄", "log": "📖"}
 
     def _parse_game_code(self, game_code_or_index: str) -> str:
         """Returns the actual game code for the given index/ game code."""
@@ -178,7 +183,8 @@ class GameSession:
     async def timeout(self) -> None:
         """Waits for a set number of seconds, then stops the game session."""
         await asyncio.sleep(self._timeout_seconds)
-        await self.notify_timeout()
+        if not self.is_in_ending_room:
+            await self.notify_timeout()
         await self.message.clear_reactions()
         await self.stop()
 
@@ -224,9 +230,16 @@ class GameSession:
         emoji = str(reaction.emoji)
 
         # check if valid action
-        acceptable_emojis = [option["emoji"] for option in self.available_options]
-        if emoji not in acceptable_emojis:
-            return
+        if self.is_in_ending_room:
+            if emoji not in self.ending_reactions.values():
+                return
+        elif self.is_showing_logs:
+            if emoji not in self.ending_reactions["replay"]:
+                return
+        else:
+            acceptable_emojis = [option["emoji"] for option in self.available_options]
+            if emoji not in acceptable_emojis:
+                return
 
         self.reset_timeout()
 
@@ -235,10 +248,22 @@ class GameSession:
             await self.message.clear_reactions()
 
         # Run relevant action method
-        all_emojis = [option["emoji"] for option in self.all_options]
+        if self.is_in_ending_room and emoji == "🔄":
+            # Restart the game, by creating a new session and attaching it to the same message.
+            await self.stop()
+            await self.start(self._ctx, self.game_code, self.message)
+            # restart the game from log menu
+            if self.is_showing_logs:
+                self._showing_logs = not self._showing_logs
+        elif self.is_in_ending_room and emoji == "📖":
+            # Show the user the choices they made during the game.
+            self._showing_logs = not self._showing_logs
 
-        await self.pick_option(all_emojis.index(emoji))
+            await self.update_message()
+        else:
+            all_emojis = [option["emoji"] for option in self.all_options]
 
+            await self.pick_option(all_emojis.index(emoji))
 
     async def on_message_delete(self, message: Message) -> None:
         """Closes the game session when the game message is deleted."""
@@ -265,6 +290,21 @@ class GameSession:
         for reaction in pickable_emojis:
             await self.message.add_reaction(reaction)
 
+    async def add_ending_reactions(self) -> None:
+        """Adds the relevant reactions to the ending message which includes a replay reaction."""
+        if not self.is_in_ending_room:
+            return
+
+        for reaction in self.ending_reactions.values():
+            await self.message.add_reaction(reaction)
+
+    async def add_log_reactions(self) -> None:
+        """Adds the replay function to the log message."""
+        if not self.is_showing_logs:
+            return
+
+        await self.message.add_reaction(self.ending_reactions["replay"])
+
     def _format_room_data(self, room_data: RoomData) -> str:
         """Formats the room data into a string for the embed description."""
         text = room_data["text"]
@@ -278,18 +318,43 @@ class GameSession:
 
         return f"{text}\n\n{formatted_options}"
 
-    def embed_message(self, room_data: RoomData | EndRoomData) -> Embed:
+    def _format_log_data(self, choices: list[OptionData], game_name: str) -> str:
+        """Formats the choice data into a string for the embed description."""
+        choices_description = "\n".join(
+        f"{index + 1}. {choice['emoji']} {choice['text']}"
+        + (f" (Effect: {choice['effect']})" if "effect" in choice else "")
+        for index, choice in enumerate(choices)
+        )
+
+        return f"**{game_name}**\n{choices_description}"
+
+    def embed_message(self, room_data: RoomData | EndRoomData, choices: list[OptionData]) -> Embed:
         """Returns an Embed with the requested room data formatted within."""
         embed = Embed()
         embed.color = int(self.game_info["color"], base=16)
 
         current_game_name = AVAILABLE_GAMES_DICT[self.game_code]["name"]
 
-        if self.is_in_ending_room:
+        if self.is_in_ending_room and not self.is_showing_logs:
             embed.description = room_data["text"]
             emoji = room_data["emoji"]
             embed.set_author(name=f"Game ended! {emoji}")
-            embed.set_footer(text=f"✨ Thanks for playing {current_game_name}!")
+            embed.set_footer(
+                text=(
+                    f"✨ Thanks for playing {current_game_name}!\n"
+                    " - use 🔄 to play again.\n"
+                    " - use 📖 to see the choices you made"
+                )
+            )
+        elif self.is_showing_logs:
+            embed.description = self._format_log_data(choices, current_game_name)
+            embed.set_author(name="📖 Game Log")
+            embed.set_footer(
+                text=(
+                    f"✨ Thanks for playing {current_game_name}!\n"
+                    " - use 🔄 to play again.\n"
+                )
+            )
         else:
             embed.description = self._format_room_data(room_data)
             embed.set_author(name=current_game_name)
@@ -299,22 +364,43 @@ class GameSession:
 
     async def update_message(self) -> None:
         """Sends the initial message, or changes the existing one to the given room ID."""
-        embed_message = self.embed_message(self.current_room_data)
+        embed_message = self.embed_message(self.current_room_data, self._choices)
+
+        file = None
+        if self.current_room_data.get("picture"):
+            image_path = f"bot/resources/fun/adventures/images/{self.current_room_data['picture']}"
+            file = File(image_path, filename="image.jpeg")
+            embed_message.set_image(url="attachment://image.jpeg")
 
         if not self.message:
-            self.message = await self.destination.send(embed=embed_message)
+            self.message = await self.destination.send(file=file, embed=embed_message)
         else:
-            await self.message.edit(embed=embed_message)
+            if file:
+                await self.message.edit(embed=embed_message, attachments=[file])
+            else:
+                await self.message.edit(embed=embed_message, attachments=[])
 
-        if self.is_in_ending_room:
-            await self.stop()
+        if self.is_in_ending_room and not self.is_showing_logs:
+            await self.add_ending_reactions()
+        elif self.is_showing_logs:
+            await self.add_log_reactions()
         else:
             await self.add_reactions()
 
     @classmethod
-    async def start(cls, ctx: Context, game_code_or_index: str | None = None) -> "GameSession":
+    async def start(
+        cls,
+        ctx: Context,
+        game_code_or_index: str | None = None,
+        message: Message | None = None
+        ) -> "GameSession":
         """Create and begin a game session based on the given game code."""
         session = cls(ctx, game_code_or_index)
+
+        # Start the session with the given message
+        if message:
+            session.message = message
+
         await session.prepare()
 
         return session
@@ -329,6 +415,11 @@ class GameSession:
     def is_in_ending_room(self) -> bool:
         """Check if the game has ended."""
         return self.current_room_data.get("type") == "end"
+
+    @property
+    def is_showing_logs(self) -> bool:
+        """Check if the player is shown logs."""
+        return self._showing_logs and self.is_in_ending_room
 
     @property
     def all_options(self) -> list[OptionData]:
@@ -371,10 +462,13 @@ class GameSession:
         new_effect = chosen_option.get("effect")
 
         # update all the game states
-        if new_effect:
-            self._effects.append(new_effect)
         self._path.append(next_room)
         self._current_room = next_room
+
+        if new_effect:
+            self._effects.append(new_effect)
+
+        self._choices.append(chosen_option)
 
         # update the message with the new room
         await self.update_message()
