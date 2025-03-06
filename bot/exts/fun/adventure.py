@@ -5,7 +5,7 @@ from contextlib import suppress
 from pathlib import Path
 from typing import Literal, NotRequired, TypedDict
 
-from discord import Embed, HTTPException, Message, Reaction, User
+from discord import Embed, File, HTTPException, Message, Reaction, User
 from discord.ext import commands
 from discord.ext.commands import Cog as DiscordCog, Context, clean_content
 from pydis_core.utils.logging import get_logger
@@ -50,6 +50,7 @@ class RoomData(TypedDict):
     """A dictionary containing the room data of the game. Part of the AdventureData dictionary."""
 
     text: str
+    picture: str | None
     options: list[OptionData]
 
 
@@ -72,7 +73,8 @@ class GameData(TypedDict):
     The keys are the room names, and the values are dictionaries containing the room data,
     which can be either a RoomData or an EndRoomData.
 
-    There must exist only one "start" key in the dictionary. However, there can be multiple endings, i.e., EndRoomData.
+    There must exist only one "start" key in the dictionary. However, there can be multiple endings, i.e.,
+    EndRoomData.
     """
 
     start: RoomData
@@ -263,7 +265,6 @@ class GameSession:
 
             await self.pick_option(all_emojis.index(emoji))
 
-
     async def on_message_delete(self, message: Message) -> None:
         """Closes the game session when the game message is deleted."""
         if message.id == self.message.id:
@@ -365,10 +366,19 @@ class GameSession:
         """Sends the initial message, or changes the existing one to the given room ID."""
         embed_message = self.embed_message(self.current_room_data, self._choices)
 
+        file = None
+        if self.current_room_data.get("picture"):
+            image_path = f"bot/resources/fun/adventures/images/{self.current_room_data['picture']}"
+            file = File(image_path, filename="image.jpeg")
+            embed_message.set_image(url="attachment://image.jpeg")
+
         if not self.message:
-            self.message = await self.destination.send(embed=embed_message)
+            self.message = await self.destination.send(file=file, embed=embed_message)
         else:
-            await self.message.edit(embed=embed_message)
+            if file:
+                await self.message.edit(embed=embed_message, attachments=[file])
+            else:
+                await self.message.edit(embed=embed_message, attachments=[])
 
         if self.is_in_ending_room and not self.is_showing_logs:
             await self.add_ending_reactions()
