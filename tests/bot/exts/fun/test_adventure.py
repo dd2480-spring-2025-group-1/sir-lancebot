@@ -38,6 +38,17 @@ class AdventureCogTests(unittest.IsolatedAsyncioTestCase):
 
         self.ctx.send.assert_not_called()
 
+    # Test for requirement #3
+    async def test_list_adventure(self):
+        """Test if the `list_adventure` command runs without any errors."""
+        await self.cog.list_adventures(self.cog, self.ctx)
+
+    # Test for requirement #3
+    async def test_new_adventure_without_game_code(self):
+        """Test if the `new_adventure` command runs without any errors when no game code is provided."""
+        await self.cog.new_adventure(self.cog, self.ctx)
+
+
 class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         """Sets up fresh objects for each test."""
@@ -228,3 +239,10 @@ class AdventureGameSessionTests(unittest.IsolatedAsyncioTestCase):
         filtered_options = game_session.available_options
 
         self.assertNotEqual(len(list(filtered_options)), len(list(all_options)))
+
+    # Test for requirement #5
+    async def test_parse_game_code_directory_traversal(self):
+        """Test if the `_parse_game_code` method only returns a name when given a directory traversal attack (no path).""" # noqa: E501
+
+        parsed_name = self.game_session._parse_game_code("../other/path")
+        self.assertEqual(parsed_name, "path")
