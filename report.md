@@ -241,6 +241,9 @@ Optional (point 1): Architectural overview.
 ![Overall UML package diagram](./overall-packages.svg)
 
 Optional (point 2): relation to design pattern(s).
+* The way the cog interacts with commands, particularly those related to games, follows the _Strategy_ behavioral design pattern. In this setup, the cog acts as the context for the _Strategy_. It delegates command functionality to various strategy classes, which are game-specific (GameSession in this case).
+* The functionality of the patched AdventureGame aligns with the Adapter structural design pattern. Essentially, the GameSession class bridges two otherwise incompatible interfaces: the cog for the Discord bot and the JSON files containing the game stories. The Adventure cog requests a game from the GameSession, which then reads the GameData (the JSON-based story data) and adapts it for display for the cog.
+
 * We strictly followed the overall architecture and design pattern of the repository, as outlined above.
 * It is by nature, very similar to the `help.py` function. With this, we can verify and confirm that our new code follows the general coding style in terms of class and function segregation.
 * Implementation wise, we also adopted various utility and helper functions from the codebase instead of re-inventing our own.
