@@ -91,8 +91,7 @@ Scope (functionality and code affected):
     - [x] Support multiple concurrent games.
         - [x] One player can instantiate multiple games at once.
         - [x] More than one game can be played at the same time, and only the player can react to their own game.
-    - [] Add graphic assets to show off stuff like bosses on special rooms.
-        - TODO: Update the above bullet point once the feature is implemented.
+    - [x] Add graphic assets to show off stuff like bosses on special rooms.
 
 ## Requirements for the new feature
 
@@ -248,8 +247,6 @@ Optional (point 2): relation to design pattern(s).
 
 ## Overall experience
 
-TODO: Update this whole section.
-
 ***What are your main take-aways from this project? What did you learn?***
 
 One of the most valuable lessons we learned and arguably the main purpose of this project is how accessible contributing to open-source projects can be. We realized that by focusing on a specific part of a project, it is relatively easy to familiarize ourselves with the codebase and standards.  
@@ -264,7 +261,7 @@ By mastering these skills, we now require less assistance from each other, and t
 
 That said, given the project's small scale and team size, our **Performing** state may not fully align with what is expected in an industry-level project. If our final presentation is successful, we could argue that we will have reached the **Adjourned** stage, as everyone will have completed their assignments and presentations.
 
-Optional (point 6): How would you put your work in context with best software engineering practice?
+<!-- Optional (point 6): How would you put your work in context with best software engineering practice? -->
 
 Optional (point 7): Is there something special you want to mention here?
 * We drew our UML class diagram in a scalable and reproducible way. We achieved this using `mermaid.js`, a javascript-based diagramming and charting tool that renders markdown-inspired text definitions to create and modify diagrams dynamically. The source file is currently stored as `adventure-classes.mmd` in the root directory, and can be rendered in real-time as HTML (see `adventure-classes.html`).
