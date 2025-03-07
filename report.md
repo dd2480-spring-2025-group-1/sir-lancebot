@@ -23,7 +23,7 @@ For each team member, how much time was spent in
 1. plenary discussions/meetings (applies to everyone);
     * 24 Feb - 2.5 hour(s)
     * 26 Feb - 2 hour(s)
-    * TODO: Update this if necessary
+    * 3 feb - 1.5 hour(s)
 
 2. discussions within parts of the group;
     * N/A, we value transparency
@@ -32,38 +32,36 @@ For each team member, how much time was spent in
     * Kim - 0.25 hour(s)
     * Johan - 0.5 hour(s)
     * Marcello - 1.5 hour(s)
-    * TODO: Update this
+    * Arvid - 1 hour(s)
 
 4. configuration and setup;
     * Kim - 0.5 hour(s)
-    * Arvid - 1 hour(s)
-    * Johan - 1.5 hour(s)
+    * Arvid - 1.5 hour(s)
+    * Johan - 0.5 hour(s)
     * Marcello - 0.5 hour(s)
-    * TODO: Update this
 
 5. analyzing code/output;
     * Kim - 2 hour(s)
     * Johan - 1 hour(s)
     * Marcello - 1 hour(s)
-    * TODO: Update this
+    * Arvid - 1 hour(s)
 
 6. writing documentation;
     * Kim - 2 hour(s)
     * Johan - 2.5 hour(s)
     * Marcello - 2.5 hour(s)
-    * TODO: Update this
 
 7. writing code;
     * Kim - 12 hour(s)
     * Johan - 10 hour(s)
     * Marcello - 10 hour(s)
-    * TODO: Update this
+    * Arvid - 8 hour(s)
 
 8. running code?
     * Kim - 0.75 hour(s)
     * Johan - 1 hour(s)
     * Marcello - 1 hour(s)
-    * TODO: Update this
+    * Arvid - 1 hour(s)
 
 For setting up tools and libraries (step 4), enumerate all dependencies
 you took care of and where you spent your time, if that time exceeds
